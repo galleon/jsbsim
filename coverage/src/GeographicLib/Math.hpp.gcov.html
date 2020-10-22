@@ -1,0 +1,723 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - JSBSim unit tests - src/GeographicLib/Math.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">src/GeographicLib</a> - Math.hpp<span style="font-size: 80%;"> (source / <a href="Math.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">JSBSim unit tests</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryHi">95.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2020-10-22 21:44:44</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">58.8 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  * \file Math.hpp
+<span class="lineNum">       3 </span>            :  * \brief Header for GeographicLib::Math class
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Copyright (c) Charles Karney (2008-2019) &lt;charles@karney.com&gt; and licensed
+<span class="lineNum">       6 </span>            :  * under the MIT/X11 License.  For more information, see
+<span class="lineNum">       7 </span>            :  * https://geographiclib.sourceforge.io/
+<span class="lineNum">       8 </span>            :  **********************************************************************/
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : // Constants.hpp includes Math.hpp.  Place this include outside Math.hpp's
+<span class="lineNum">      11 </span>            : // include guard to enforce this ordering.
+<span class="lineNum">      12 </span>            : #include &lt;GeographicLib/Constants.hpp&gt;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #if !defined(GEOGRAPHICLIB_MATH_HPP)
+<span class="lineNum">      15 </span>            : #define GEOGRAPHICLIB_MATH_HPP 1
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : /**
+<span class="lineNum">      18 </span>            :  * Are C++11 math functions available?
+<span class="lineNum">      19 </span>            :  **********************************************************************/
+<span class="lineNum">      20 </span>            : #if !defined(GEOGRAPHICLIB_CXX11_MATH)
+<span class="lineNum">      21 </span>            : // Recent versions of g++ -std=c++11 (4.7 and later?) set __cplusplus to 201103
+<span class="lineNum">      22 </span>            : // and support the new C++11 mathematical functions, std::atanh, etc.  However
+<span class="lineNum">      23 </span>            : // the Android toolchain, which uses g++ -std=c++11 (4.8 as of 2014-03-11,
+<span class="lineNum">      24 </span>            : // according to Pullan Lu), does not support std::atanh.  Android toolchains
+<span class="lineNum">      25 </span>            : // might define __ANDROID__ or ANDROID; so need to check both.  With OSX the
+<span class="lineNum">      26 </span>            : // version is GNUC version 4.2 and __cplusplus is set to 201103, so remove the
+<span class="lineNum">      27 </span>            : // version check on GNUC.
+<span class="lineNum">      28 </span>            : #  if defined(__GNUC__) &amp;&amp; __cplusplus &gt;= 201103 &amp;&amp; \
+<span class="lineNum">      29 </span>            :   !(defined(__ANDROID__) || defined(ANDROID) || defined(__CYGWIN__))
+<span class="lineNum">      30 </span>            : #    define GEOGRAPHICLIB_CXX11_MATH 1
+<span class="lineNum">      31 </span>            : // Visual C++ 12 supports these functions
+<span class="lineNum">      32 </span>            : #  elif defined(_MSC_VER) &amp;&amp; _MSC_VER &gt;= 1800
+<span class="lineNum">      33 </span>            : #    define GEOGRAPHICLIB_CXX11_MATH 1
+<span class="lineNum">      34 </span>            : #  else
+<span class="lineNum">      35 </span>            : #    define GEOGRAPHICLIB_CXX11_MATH 0
+<span class="lineNum">      36 </span>            : #  endif
+<span class="lineNum">      37 </span>            : #endif
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #if !defined(GEOGRAPHICLIB_WORDS_BIGENDIAN)
+<span class="lineNum">      40 </span>            : #  define GEOGRAPHICLIB_WORDS_BIGENDIAN 0
+<span class="lineNum">      41 </span>            : #endif
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : #if !defined(GEOGRAPHICLIB_HAVE_LONG_DOUBLE)
+<span class="lineNum">      44 </span>            : #  define GEOGRAPHICLIB_HAVE_LONG_DOUBLE 0
+<span class="lineNum">      45 </span>            : #endif
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : #if !defined(GEOGRAPHICLIB_PRECISION)
+<span class="lineNum">      48 </span>            : /**
+<span class="lineNum">      49 </span>            :  * The precision of floating point numbers used in %GeographicLib.  1 means
+<span class="lineNum">      50 </span>            :  * float (single precision); 2 (the default) means double; 3 means long double;
+<span class="lineNum">      51 </span>            :  * 4 is reserved for quadruple precision.  Nearly all the testing has been
+<span class="lineNum">      52 </span>            :  * carried out with doubles and that's the recommended configuration.  In order
+<span class="lineNum">      53 </span>            :  * for long double to be used, GEOGRAPHICLIB_HAVE_LONG_DOUBLE needs to be
+<span class="lineNum">      54 </span>            :  * defined.  Note that with Microsoft Visual Studio, long double is the same as
+<span class="lineNum">      55 </span>            :  * double.
+<span class="lineNum">      56 </span>            :  **********************************************************************/
+<span class="lineNum">      57 </span>            : #  define GEOGRAPHICLIB_PRECISION 2
+<span class="lineNum">      58 </span>            : #endif
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      61 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">      62 </span>            : #include &lt;limits&gt;
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : #if GEOGRAPHICLIB_PRECISION == 4
+<span class="lineNum">      65 </span>            : #include &lt;boost/version.hpp&gt;
+<span class="lineNum">      66 </span>            : #include &lt;boost/multiprecision/float128.hpp&gt;
+<span class="lineNum">      67 </span>            : #include &lt;boost/math/special_functions.hpp&gt;
+<span class="lineNum">      68 </span>            : #elif GEOGRAPHICLIB_PRECISION == 5
+<span class="lineNum">      69 </span>            : #include &lt;mpreal.h&gt;
+<span class="lineNum">      70 </span>            : #endif
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            : #if GEOGRAPHICLIB_PRECISION &gt; 3
+<span class="lineNum">      73 </span>            : // volatile keyword makes no sense for multiprec types
+<span class="lineNum">      74 </span>            : #define GEOGRAPHICLIB_VOLATILE
+<span class="lineNum">      75 </span>            : // Signal a convergence failure with multiprec types by throwing an exception
+<span class="lineNum">      76 </span>            : // at loop exit.
+<span class="lineNum">      77 </span>            : #define GEOGRAPHICLIB_PANIC \
+<span class="lineNum">      78 </span>            :   (throw GeographicLib::GeographicErr(&quot;Convergence failure&quot;), false)
+<span class="lineNum">      79 </span>            : #else
+<span class="lineNum">      80 </span>            : #define GEOGRAPHICLIB_VOLATILE volatile
+<span class="lineNum">      81 </span>            : // Ignore convergence failures with standard floating points types by allowing
+<span class="lineNum">      82 </span>            : // loop to exit cleanly.
+<span class="lineNum">      83 </span>            : #define GEOGRAPHICLIB_PANIC false
+<span class="lineNum">      84 </span>            : #endif
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : namespace GeographicLib {
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :   /**
+<span class="lineNum">      89 </span>            :    * \brief Mathematical functions needed by %GeographicLib
+<span class="lineNum">      90 </span>            :    *
+<span class="lineNum">      91 </span>            :    * Define mathematical functions in order to localize system dependencies and
+<span class="lineNum">      92 </span>            :    * to provide generic versions of the functions.  In addition define a real
+<span class="lineNum">      93 </span>            :    * type to be used by %GeographicLib.
+<span class="lineNum">      94 </span>            :    *
+<span class="lineNum">      95 </span>            :    * Example of use:
+<span class="lineNum">      96 </span>            :    * \include example-Math.cpp
+<span class="lineNum">      97 </span>            :    **********************************************************************/
+<span class="lineNum">      98 </span>            :   class GEOGRAPHICLIB_EXPORT Math {
+<span class="lineNum">      99 </span>            :   private:
+<span class="lineNum">     100 </span>            :     void dummy();               // Static check for GEOGRAPHICLIB_PRECISION
+<span class="lineNum">     101 </span>            :     Math();                     // Disable constructor
+<span class="lineNum">     102 </span>            :   public:
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : #if GEOGRAPHICLIB_HAVE_LONG_DOUBLE
+<span class="lineNum">     105 </span>            :     /**
+<span class="lineNum">     106 </span>            :      * The extended precision type for real numbers, used for some testing.
+<span class="lineNum">     107 </span>            :      * This is long double on computers with this type; otherwise it is double.
+<span class="lineNum">     108 </span>            :      **********************************************************************/
+<span class="lineNum">     109 </span>            :     typedef long double extended;
+<span class="lineNum">     110 </span>            : #else
+<span class="lineNum">     111 </span>            :     typedef double extended;
+<span class="lineNum">     112 </span>            : #endif
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : #if GEOGRAPHICLIB_PRECISION == 2
+<span class="lineNum">     115 </span>            :     /**
+<span class="lineNum">     116 </span>            :      * The real type for %GeographicLib. Nearly all the testing has been done
+<span class="lineNum">     117 </span>            :      * with \e real = double.  However, the algorithms should also work with
+<span class="lineNum">     118 </span>            :      * float and long double (where available).  (&lt;b&gt;CAUTION&lt;/b&gt;: reasonable
+<span class="lineNum">     119 </span>            :      * accuracy typically cannot be obtained using floats.)
+<span class="lineNum">     120 </span>            :      **********************************************************************/
+<span class="lineNum">     121 </span>            :     typedef double real;
+<span class="lineNum">     122 </span>            : #elif GEOGRAPHICLIB_PRECISION == 1
+<span class="lineNum">     123 </span>            :     typedef float real;
+<span class="lineNum">     124 </span>            : #elif GEOGRAPHICLIB_PRECISION == 3
+<span class="lineNum">     125 </span>            :     typedef extended real;
+<span class="lineNum">     126 </span>            : #elif GEOGRAPHICLIB_PRECISION == 4
+<span class="lineNum">     127 </span>            :     typedef boost::multiprecision::float128 real;
+<span class="lineNum">     128 </span>            : #elif GEOGRAPHICLIB_PRECISION == 5
+<span class="lineNum">     129 </span>            :     typedef mpfr::mpreal real;
+<span class="lineNum">     130 </span>            : #else
+<span class="lineNum">     131 </span>            :     typedef double real;
+<span class="lineNum">     132 </span>            : #endif
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :     /**
+<span class="lineNum">     135 </span>            :      * @return the number of bits of precision in a real number.
+<span class="lineNum">     136 </span>            :      **********************************************************************/
+<span class="lineNum">     137 </span>            :     static int digits();
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :     /**
+<span class="lineNum">     140 </span>            :      * Set the binary precision of a real number.
+<span class="lineNum">     141 </span>            :      *
+<span class="lineNum">     142 </span>            :      * @param[in] ndigits the number of bits of precision.
+<span class="lineNum">     143 </span>            :      * @return the resulting number of bits of precision.
+<span class="lineNum">     144 </span>            :      *
+<span class="lineNum">     145 </span>            :      * This only has an effect when GEOGRAPHICLIB_PRECISION = 5.  See also
+<span class="lineNum">     146 </span>            :      * Utility::set_digits for caveats about when this routine should be
+<span class="lineNum">     147 </span>            :      * called.
+<span class="lineNum">     148 </span>            :      **********************************************************************/
+<span class="lineNum">     149 </span>            :     static int set_digits(int ndigits);
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :     /**
+<span class="lineNum">     152 </span>            :      * @return the number of decimal digits of precision in a real number.
+<span class="lineNum">     153 </span>            :      **********************************************************************/
+<span class="lineNum">     154 </span>            :     static int digits10();
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :     /**
+<span class="lineNum">     157 </span>            :      * Number of additional decimal digits of precision for real relative to
+<span class="lineNum">     158 </span>            :      * double (0 for float).
+<span class="lineNum">     159 </span>            :      **********************************************************************/
+<span class="lineNum">     160 </span>            :     static int extra_digits();
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            :     /**
+<span class="lineNum">     163 </span>            :      * true if the machine is big-endian.
+<span class="lineNum">     164 </span>            :      **********************************************************************/
+<span class="lineNum">     165 </span>            :     static const bool bigendian = GEOGRAPHICLIB_WORDS_BIGENDIAN;
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :     /**
+<span class="lineNum">     168 </span>            :      * @tparam T the type of the returned value.
+<a name="169"><span class="lineNum">     169 </span>            :      * @return &amp;pi;.</a>
+<span class="lineNum">     170 </span>            :      **********************************************************************/
+<span class="lineNum">     171 </span><span class="lineCov">        301 :     template&lt;typename T&gt; static T pi() {</span>
+<span class="lineNum">     172 </span>            :       using std::atan2;
+<span class="lineNum">     173 </span>            :       static const T pi = atan2(T(0), T(-1));
+<span class="lineNum">     174 </span><span class="lineCov">        301 :       return pi;</span>
+<span class="lineNum">     175 </span>            :     }
+<span class="lineNum">     176 </span>            :     /**
+<a name="177"><span class="lineNum">     177 </span>            :      * A synonym for pi&lt;real&gt;().</a>
+<span class="lineNum">     178 </span>            :      **********************************************************************/
+<span class="lineNum">     179 </span><span class="lineCov">        298 :     static real pi() { return pi&lt;real&gt;(); }</span>
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :     /**
+<span class="lineNum">     182 </span>            :      * @tparam T the type of the returned value.
+<a name="183"><span class="lineNum">     183 </span>            :      * @return the number of radians in a degree.</a>
+<span class="lineNum">     184 </span>            :      **********************************************************************/
+<span class="lineNum">     185 </span><span class="lineCov">       2865 :     template&lt;typename T&gt; static T degree() {</span>
+<span class="lineNum">     186 </span><span class="lineCov">       2865 :       static const T degree = pi&lt;T&gt;() / 180;</span>
+<span class="lineNum">     187 </span><span class="lineCov">       2865 :       return degree;</span>
+<span class="lineNum">     188 </span>            :     }
+<span class="lineNum">     189 </span>            :     /**
+<a name="190"><span class="lineNum">     190 </span>            :      * A synonym for degree&lt;real&gt;().</a>
+<span class="lineNum">     191 </span>            :      **********************************************************************/
+<span class="lineNum">     192 </span><span class="lineCov">        994 :     static real degree() { return degree&lt;real&gt;(); }</span>
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :     /**
+<span class="lineNum">     195 </span>            :      * Square a number.
+<span class="lineNum">     196 </span>            :      *
+<span class="lineNum">     197 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     198 </span>            :      * @param[in] x
+<a name="199"><span class="lineNum">     199 </span>            :      * @return &lt;i&gt;x&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;.</a>
+<span class="lineNum">     200 </span>            :      **********************************************************************/
+<span class="lineNum">     201 </span><span class="lineCov">       6277 :     template&lt;typename T&gt; static T sq(T x)</span>
+<span class="lineNum">     202 </span><span class="lineCov">       6277 :     { return x * x; }</span>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :     /**
+<span class="lineNum">     205 </span>            :      * The hypotenuse function avoiding underflow and overflow.
+<span class="lineNum">     206 </span>            :      *
+<span class="lineNum">     207 </span>            :      * @tparam T the type of the arguments and the returned value.
+<span class="lineNum">     208 </span>            :      * @param[in] x
+<span class="lineNum">     209 </span>            :      * @param[in] y
+<span class="lineNum">     210 </span>            :      * @return sqrt(&lt;i&gt;x&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt; + &lt;i&gt;y&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;).
+<span class="lineNum">     211 </span>            :      **********************************************************************/
+<span class="lineNum">     212 </span>            :     template&lt;typename T&gt; static T hypot(T x, T y);
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :     /**
+<span class="lineNum">     215 </span>            :      * exp(\e x) &amp;minus; 1 accurate near \e x = 0.
+<span class="lineNum">     216 </span>            :      *
+<span class="lineNum">     217 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     218 </span>            :      * @param[in] x
+<span class="lineNum">     219 </span>            :      * @return exp(\e x) &amp;minus; 1.
+<span class="lineNum">     220 </span>            :      **********************************************************************/
+<span class="lineNum">     221 </span>            :     template&lt;typename T&gt; static T expm1(T x);
+<span class="lineNum">     222 </span>            : 
+<span class="lineNum">     223 </span>            :     /**
+<span class="lineNum">     224 </span>            :      * log(1 + \e x) accurate near \e x = 0.
+<span class="lineNum">     225 </span>            :      *
+<span class="lineNum">     226 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     227 </span>            :      * @param[in] x
+<span class="lineNum">     228 </span>            :      * @return log(1 + \e x).
+<span class="lineNum">     229 </span>            :      **********************************************************************/
+<span class="lineNum">     230 </span>            :     template&lt;typename T&gt; static T log1p(T x);
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            :     /**
+<span class="lineNum">     233 </span>            :      * The inverse hyperbolic sine function.
+<span class="lineNum">     234 </span>            :      *
+<span class="lineNum">     235 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     236 </span>            :      * @param[in] x
+<span class="lineNum">     237 </span>            :      * @return asinh(\e x).
+<span class="lineNum">     238 </span>            :      **********************************************************************/
+<span class="lineNum">     239 </span>            :     template&lt;typename T&gt; static T asinh(T x);
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            :     /**
+<span class="lineNum">     242 </span>            :      * The inverse hyperbolic tangent function.
+<span class="lineNum">     243 </span>            :      *
+<span class="lineNum">     244 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     245 </span>            :      * @param[in] x
+<span class="lineNum">     246 </span>            :      * @return atanh(\e x).
+<span class="lineNum">     247 </span>            :      **********************************************************************/
+<span class="lineNum">     248 </span>            :     template&lt;typename T&gt; static T atanh(T x);
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     /**
+<span class="lineNum">     251 </span>            :      * Copy the sign.
+<span class="lineNum">     252 </span>            :      *
+<span class="lineNum">     253 </span>            :      * @tparam T the type of the argument.
+<span class="lineNum">     254 </span>            :      * @param[in] x gives the magitude of the result.
+<span class="lineNum">     255 </span>            :      * @param[in] y gives the sign of the result.
+<span class="lineNum">     256 </span>            :      * @return value with the magnitude of \e x and with the sign of \e y.
+<span class="lineNum">     257 </span>            :      *
+<span class="lineNum">     258 </span>            :      * This routine correctly handles the case \e y = &amp;minus;0, returning
+<span class="lineNum">     259 </span>            :      * &amp;minus|&lt;i&gt;x&lt;/i&gt;|.
+<span class="lineNum">     260 </span>            :      **********************************************************************/
+<span class="lineNum">     261 </span>            :     template&lt;typename T&gt; static T copysign(T x, T y);
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :     /**
+<span class="lineNum">     264 </span>            :      * The cube root function.
+<span class="lineNum">     265 </span>            :      *
+<span class="lineNum">     266 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     267 </span>            :      * @param[in] x
+<span class="lineNum">     268 </span>            :      * @return the real cube root of \e x.
+<span class="lineNum">     269 </span>            :      **********************************************************************/
+<span class="lineNum">     270 </span>            :     template&lt;typename T&gt; static T cbrt(T x);
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            :     /**
+<span class="lineNum">     273 </span>            :      * The remainder function.
+<span class="lineNum">     274 </span>            :      *
+<span class="lineNum">     275 </span>            :      * @tparam T the type of the arguments and the returned value.
+<span class="lineNum">     276 </span>            :      * @param[in] x
+<span class="lineNum">     277 </span>            :      * @param[in] y
+<span class="lineNum">     278 </span>            :      * @return the remainder of \e x/\e y in the range [&amp;minus;\e y/2, \e y/2].
+<span class="lineNum">     279 </span>            :      **********************************************************************/
+<span class="lineNum">     280 </span>            :     template&lt;typename T&gt; static T remainder(T x, T y);
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            :     /**
+<span class="lineNum">     283 </span>            :      * The remquo function.
+<span class="lineNum">     284 </span>            :      *
+<span class="lineNum">     285 </span>            :      * @tparam T the type of the arguments and the returned value.
+<span class="lineNum">     286 </span>            :      * @param[in] x
+<span class="lineNum">     287 </span>            :      * @param[in] y
+<span class="lineNum">     288 </span>            :      * @param[out] n the low 3 bits of the quotient
+<span class="lineNum">     289 </span>            :      * @return the remainder of \e x/\e y in the range [&amp;minus;\e y/2, \e y/2].
+<span class="lineNum">     290 </span>            :      **********************************************************************/
+<span class="lineNum">     291 </span>            :     template&lt;typename T&gt; static T remquo(T x, T y, int* n);
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     /**
+<span class="lineNum">     294 </span>            :      * The round function.
+<span class="lineNum">     295 </span>            :      *
+<span class="lineNum">     296 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     297 </span>            :      * @param[in] x
+<span class="lineNum">     298 </span>            :      * @return \e x round to the nearest integer (ties round away from 0).
+<span class="lineNum">     299 </span>            :      **********************************************************************/
+<span class="lineNum">     300 </span>            :     template&lt;typename T&gt; static T round(T x);
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            :     /**
+<span class="lineNum">     303 </span>            :      * The lround function.
+<span class="lineNum">     304 </span>            :      *
+<span class="lineNum">     305 </span>            :      * @tparam T the type of the argument.
+<span class="lineNum">     306 </span>            :      * @param[in] x
+<span class="lineNum">     307 </span>            :      * @return \e x round to the nearest integer as a long int (ties round away
+<span class="lineNum">     308 </span>            :      *   from 0).
+<span class="lineNum">     309 </span>            :      *
+<span class="lineNum">     310 </span>            :      * If the result does not fit in a long int, the return value is undefined.
+<span class="lineNum">     311 </span>            :      **********************************************************************/
+<span class="lineNum">     312 </span>            :     template&lt;typename T&gt; static long lround(T x);
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            :     /**
+<span class="lineNum">     315 </span>            :      * Fused multiply and add.
+<span class="lineNum">     316 </span>            :      *
+<span class="lineNum">     317 </span>            :      * @tparam T the type of the arguments and the returned value.
+<span class="lineNum">     318 </span>            :      * @param[in] x
+<span class="lineNum">     319 </span>            :      * @param[in] y
+<span class="lineNum">     320 </span>            :      * @param[in] z
+<span class="lineNum">     321 </span>            :      * @return &lt;i&gt;xy&lt;/i&gt; + &lt;i&gt;z&lt;/i&gt;, correctly rounded (on those platforms with
+<span class="lineNum">     322 </span>            :      *   support for the &lt;code&gt;fma&lt;/code&gt; instruction).
+<span class="lineNum">     323 </span>            :      *
+<span class="lineNum">     324 </span>            :      * On platforms without the &lt;code&gt;fma&lt;/code&gt; instruction, no attempt is
+<span class="lineNum">     325 </span>            :      * made to improve on the result of a rounded multiplication followed by a
+<span class="lineNum">     326 </span>            :      * rounded addition.
+<span class="lineNum">     327 </span>            :      **********************************************************************/
+<span class="lineNum">     328 </span>            :     template&lt;typename T&gt; static T fma(T x, T y, T z);
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            :     /**
+<span class="lineNum">     331 </span>            :      * Normalize a two-vector.
+<span class="lineNum">     332 </span>            :      *
+<span class="lineNum">     333 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     334 </span>            :      * @param[in,out] x on output set to &lt;i&gt;x&lt;/i&gt;/hypot(&lt;i&gt;x&lt;/i&gt;, &lt;i&gt;y&lt;/i&gt;).
+<a name="335"><span class="lineNum">     335 </span>            :      * @param[in,out] y on output set to &lt;i&gt;y&lt;/i&gt;/hypot(&lt;i&gt;x&lt;/i&gt;, &lt;i&gt;y&lt;/i&gt;).</a>
+<span class="lineNum">     336 </span>            :      **********************************************************************/
+<span class="lineNum">     337 </span><span class="lineCov">       2016 :     template&lt;typename T&gt; static void norm(T&amp; x, T&amp; y)</span>
+<span class="lineNum">     338 </span><span class="lineCov">       2016 :     { T h = hypot(x, y); x /= h; y /= h; }</span>
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            :     /**
+<span class="lineNum">     341 </span>            :      * The error-free sum of two numbers.
+<span class="lineNum">     342 </span>            :      *
+<span class="lineNum">     343 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     344 </span>            :      * @param[in] u
+<span class="lineNum">     345 </span>            :      * @param[in] v
+<span class="lineNum">     346 </span>            :      * @param[out] t the exact error given by (\e u + \e v) - \e s.
+<span class="lineNum">     347 </span>            :      * @return \e s = round(\e u + \e v).
+<span class="lineNum">     348 </span>            :      *
+<span class="lineNum">     349 </span>            :      * See D. E. Knuth, TAOCP, Vol 2, 4.2.2, Theorem B.  (Note that \e t can be
+<span class="lineNum">     350 </span>            :      * the same as one of the first two arguments.)
+<span class="lineNum">     351 </span>            :      **********************************************************************/
+<span class="lineNum">     352 </span>            :     template&lt;typename T&gt; static T sum(T u, T v, T&amp; t);
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            :     /**
+<span class="lineNum">     355 </span>            :      * Evaluate a polynomial.
+<span class="lineNum">     356 </span>            :      *
+<span class="lineNum">     357 </span>            :      * @tparam T the type of the arguments and returned value.
+<span class="lineNum">     358 </span>            :      * @param[in] N the order of the polynomial.
+<span class="lineNum">     359 </span>            :      * @param[in] p the coefficient array (of size \e N + 1).
+<span class="lineNum">     360 </span>            :      * @param[in] x the variable.
+<span class="lineNum">     361 </span>            :      * @return the value of the polynomial.
+<span class="lineNum">     362 </span>            :      *
+<span class="lineNum">     363 </span>            :      * Evaluate &lt;i&gt;y&lt;/i&gt; = &amp;sum;&lt;sub&gt;&lt;i&gt;n&lt;/i&gt;=0..&lt;i&gt;N&lt;/i&gt;&lt;/sub&gt;
+<span class="lineNum">     364 </span>            :      * &lt;i&gt;p&lt;/i&gt;&lt;sub&gt;&lt;i&gt;n&lt;/i&gt;&lt;/sub&gt; &lt;i&gt;x&lt;/i&gt;&lt;sup&gt;&lt;i&gt;N&lt;/i&gt;&amp;minus;&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;.
+<span class="lineNum">     365 </span>            :      * Return 0 if \e N &amp;lt; 0.  Return &lt;i&gt;p&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt;, if \e N = 0 (even
+<a name="366"><span class="lineNum">     366 </span>            :      * if \e x is infinite or a nan).  The evaluation uses Horner's method.</a>
+<span class="lineNum">     367 </span>            :      **********************************************************************/
+<span class="lineNum">     368 </span><span class="lineCov">      31723 :     template&lt;typename T&gt; static T polyval(int N, const T p[], T x)</span>
+<span class="lineNum">     369 </span>            :     // This used to employ Math::fma; but that's too slow and it seemed not to
+<span class="lineNum">     370 </span>            :     // improve the accuracy noticeably.  This might change when there's direct
+<span class="lineNum">     371 </span>            :     // hardware support for fma.
+<span class="lineNum">     372 </span><span class="lineCov">      31723 :     { T y = N &lt; 0 ? 0 : *p++; while (--N &gt;= 0) y = y * x + *p++; return y; }</span>
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            :     /**
+<span class="lineNum">     375 </span>            :      * Normalize an angle.
+<span class="lineNum">     376 </span>            :      *
+<span class="lineNum">     377 </span>            :      * @tparam T the type of the argument and returned value.
+<span class="lineNum">     378 </span>            :      * @param[in] x the angle in degrees.
+<span class="lineNum">     379 </span>            :      * @return the angle reduced to the range (&amp;minus;180&amp;deg;, 180&amp;deg;].
+<span class="lineNum">     380 </span>            :      *
+<a name="381"><span class="lineNum">     381 </span>            :      * The range of \e x is unrestricted.</a>
+<span class="lineNum">     382 </span>            :      **********************************************************************/
+<span class="lineNum">     383 </span><span class="lineCov">        507 :     template&lt;typename T&gt; static T AngNormalize(T x) {</span>
+<span class="lineNum">     384 </span><span class="lineCov">        507 :       x = remainder(x, T(360)); return x != -180 ? x : 180;</span>
+<span class="lineNum">     385 </span>            :     }
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span>            :     /**
+<span class="lineNum">     388 </span>            :      * Normalize a latitude.
+<span class="lineNum">     389 </span>            :      *
+<span class="lineNum">     390 </span>            :      * @tparam T the type of the argument and returned value.
+<span class="lineNum">     391 </span>            :      * @param[in] x the angle in degrees.
+<span class="lineNum">     392 </span>            :      * @return x if it is in the range [&amp;minus;90&amp;deg;, 90&amp;deg;], otherwise
+<a name="393"><span class="lineNum">     393 </span>            :      *   return NaN.</a>
+<span class="lineNum">     394 </span>            :      **********************************************************************/
+<span class="lineNum">     395 </span><span class="lineCov">       1014 :     template&lt;typename T&gt; static T LatFix(T x)</span>
+<span class="lineNum">     396 </span><span class="lineCov">       1014 :     { using std::abs; return abs(x) &gt; 90 ? NaN&lt;T&gt;() : x; }</span>
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            :     /**
+<span class="lineNum">     399 </span>            :      * The exact difference of two angles reduced to
+<span class="lineNum">     400 </span>            :      * (&amp;minus;180&amp;deg;, 180&amp;deg;].
+<span class="lineNum">     401 </span>            :      *
+<span class="lineNum">     402 </span>            :      * @tparam T the type of the arguments and returned value.
+<span class="lineNum">     403 </span>            :      * @param[in] x the first angle in degrees.
+<span class="lineNum">     404 </span>            :      * @param[in] y the second angle in degrees.
+<span class="lineNum">     405 </span>            :      * @param[out] e the error term in degrees.
+<span class="lineNum">     406 </span>            :      * @return \e d, the truncated value of \e y &amp;minus; \e x.
+<span class="lineNum">     407 </span>            :      *
+<span class="lineNum">     408 </span>            :      * This computes \e z = \e y &amp;minus; \e x exactly, reduced to
+<span class="lineNum">     409 </span>            :      * (&amp;minus;180&amp;deg;, 180&amp;deg;]; and then sets \e z = \e d + \e e where \e d
+<span class="lineNum">     410 </span>            :      * is the nearest representable number to \e z and \e e is the truncation
+<span class="lineNum">     411 </span>            :      * error.  If \e d = &amp;minus;180, then \e e &amp;gt; 0; If \e d = 180, then \e e
+<a name="412"><span class="lineNum">     412 </span>            :      * &amp;le; 0.</a>
+<span class="lineNum">     413 </span>            :      **********************************************************************/
+<span class="lineNum">     414 </span><span class="lineCov">        507 :     template&lt;typename T&gt; static T AngDiff(T x, T y, T&amp; e) {</span>
+<span class="lineNum">     415 </span><span class="lineCov">        507 :       T t, d = AngNormalize(sum(remainder(-x, T(360)),</span>
+<span class="lineNum">     416 </span>            :                                 remainder( y, T(360)), t));
+<span class="lineNum">     417 </span>            :       // Here y - x = d + t (mod 360), exactly, where d is in (-180,180] and
+<span class="lineNum">     418 </span>            :       // abs(t) &lt;= eps (eps = 2^-45 for doubles).  The only case where the
+<span class="lineNum">     419 </span>            :       // addition of t takes the result outside the range (-180,180] is d = 180
+<span class="lineNum">     420 </span>            :       // and t &gt; 0.  The case, d = -180 + eps, t = -eps, can't happen, since
+<span class="lineNum">     421 </span>            :       // sum would have returned the exact result in such a case (i.e., given t
+<span class="lineNum">     422 </span>            :       // = 0).
+<span class="lineNum">     423 </span><span class="lineCov">        507 :       return sum(d == 180 &amp;&amp; t &gt; 0 ? -180 : d, t, e);</span>
+<span class="lineNum">     424 </span>            :     }
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            :     /**
+<span class="lineNum">     427 </span>            :      * Difference of two angles reduced to [&amp;minus;180&amp;deg;, 180&amp;deg;]
+<span class="lineNum">     428 </span>            :      *
+<span class="lineNum">     429 </span>            :      * @tparam T the type of the arguments and returned value.
+<span class="lineNum">     430 </span>            :      * @param[in] x the first angle in degrees.
+<span class="lineNum">     431 </span>            :      * @param[in] y the second angle in degrees.
+<span class="lineNum">     432 </span>            :      * @return \e y &amp;minus; \e x, reduced to the range [&amp;minus;180&amp;deg;,
+<span class="lineNum">     433 </span>            :      *   180&amp;deg;].
+<span class="lineNum">     434 </span>            :      *
+<span class="lineNum">     435 </span>            :      * The result is equivalent to computing the difference exactly, reducing
+<span class="lineNum">     436 </span>            :      * it to (&amp;minus;180&amp;deg;, 180&amp;deg;] and rounding the result.  Note that
+<span class="lineNum">     437 </span>            :      * this prescription allows &amp;minus;180&amp;deg; to be returned (e.g., if \e x
+<span class="lineNum">     438 </span>            :      * is tiny and negative and \e y = 180&amp;deg;).
+<span class="lineNum">     439 </span>            :      **********************************************************************/
+<span class="lineNum">     440 </span>            :     template&lt;typename T&gt; static T AngDiff(T x, T y)
+<span class="lineNum">     441 </span>            :     { T e; return AngDiff(x, y, e); }
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            :     /**
+<span class="lineNum">     444 </span>            :      * Coarsen a value close to zero.
+<span class="lineNum">     445 </span>            :      *
+<span class="lineNum">     446 </span>            :      * @tparam T the type of the argument and returned value.
+<span class="lineNum">     447 </span>            :      * @param[in] x
+<span class="lineNum">     448 </span>            :      * @return the coarsened value.
+<span class="lineNum">     449 </span>            :      *
+<span class="lineNum">     450 </span>            :      * The makes the smallest gap in \e x = 1/16 &amp;minus; nextafter(1/16, 0) =
+<span class="lineNum">     451 </span>            :      * 1/2&lt;sup&gt;57&lt;/sup&gt; for reals = 0.7 pm on the earth if \e x is an angle in
+<span class="lineNum">     452 </span>            :      * degrees.  (This is about 1000 times more resolution than we get with
+<span class="lineNum">     453 </span>            :      * angles around 90&amp;deg;.)  We use this to avoid having to deal with near
+<span class="lineNum">     454 </span>            :      * singular cases when \e x is non-zero but tiny (e.g.,
+<span class="lineNum">     455 </span>            :      * 10&lt;sup&gt;&amp;minus;200&lt;/sup&gt;).  This converts &amp;minus;0 to +0; however tiny
+<span class="lineNum">     456 </span>            :      * negative numbers get converted to &amp;minus;0.
+<span class="lineNum">     457 </span>            :      **********************************************************************/
+<span class="lineNum">     458 </span>            :     template&lt;typename T&gt; static T AngRound(T x);
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            :     /**
+<span class="lineNum">     461 </span>            :      * Evaluate the sine and cosine function with the argument in degrees
+<span class="lineNum">     462 </span>            :      *
+<span class="lineNum">     463 </span>            :      * @tparam T the type of the arguments.
+<span class="lineNum">     464 </span>            :      * @param[in] x in degrees.
+<span class="lineNum">     465 </span>            :      * @param[out] sinx sin(&lt;i&gt;x&lt;/i&gt;).
+<span class="lineNum">     466 </span>            :      * @param[out] cosx cos(&lt;i&gt;x&lt;/i&gt;).
+<span class="lineNum">     467 </span>            :      *
+<span class="lineNum">     468 </span>            :      * The results obey exactly the elementary properties of the trigonometric
+<span class="lineNum">     469 </span>            :      * functions, e.g., sin 9&amp;deg; = cos 81&amp;deg; = &amp;minus; sin 123456789&amp;deg;.
+<span class="lineNum">     470 </span>            :      * If x = &amp;minus;0, then \e sinx = &amp;minus;0; this is the only case where
+<span class="lineNum">     471 </span>            :      * &amp;minus;0 is returned.
+<span class="lineNum">     472 </span>            :      **********************************************************************/
+<span class="lineNum">     473 </span>            :     template&lt;typename T&gt; static void sincosd(T x, T&amp; sinx, T&amp; cosx);
+<span class="lineNum">     474 </span>            : 
+<span class="lineNum">     475 </span>            :     /**
+<span class="lineNum">     476 </span>            :      * Evaluate the sine function with the argument in degrees
+<span class="lineNum">     477 </span>            :      *
+<span class="lineNum">     478 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     479 </span>            :      * @param[in] x in degrees.
+<span class="lineNum">     480 </span>            :      * @return sin(&lt;i&gt;x&lt;/i&gt;).
+<span class="lineNum">     481 </span>            :      **********************************************************************/
+<span class="lineNum">     482 </span>            :     template&lt;typename T&gt; static T sind(T x);
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            :     /**
+<span class="lineNum">     485 </span>            :      * Evaluate the cosine function with the argument in degrees
+<span class="lineNum">     486 </span>            :      *
+<span class="lineNum">     487 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     488 </span>            :      * @param[in] x in degrees.
+<span class="lineNum">     489 </span>            :      * @return cos(&lt;i&gt;x&lt;/i&gt;).
+<span class="lineNum">     490 </span>            :      **********************************************************************/
+<span class="lineNum">     491 </span>            :     template&lt;typename T&gt; static T cosd(T x);
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            :     /**
+<span class="lineNum">     494 </span>            :      * Evaluate the tangent function with the argument in degrees
+<span class="lineNum">     495 </span>            :      *
+<span class="lineNum">     496 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     497 </span>            :      * @param[in] x in degrees.
+<span class="lineNum">     498 </span>            :      * @return tan(&lt;i&gt;x&lt;/i&gt;).
+<span class="lineNum">     499 </span>            :      *
+<span class="lineNum">     500 </span>            :      * If \e x = &amp;plusmn;90&amp;deg;, then a suitably large (but finite) value is
+<span class="lineNum">     501 </span>            :      * returned.
+<span class="lineNum">     502 </span>            :      **********************************************************************/
+<span class="lineNum">     503 </span>            :     template&lt;typename T&gt; static T tand(T x);
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span>            :     /**
+<span class="lineNum">     506 </span>            :      * Evaluate the atan2 function with the result in degrees
+<span class="lineNum">     507 </span>            :      *
+<span class="lineNum">     508 </span>            :      * @tparam T the type of the arguments and the returned value.
+<span class="lineNum">     509 </span>            :      * @param[in] y
+<span class="lineNum">     510 </span>            :      * @param[in] x
+<span class="lineNum">     511 </span>            :      * @return atan2(&lt;i&gt;y&lt;/i&gt;, &lt;i&gt;x&lt;/i&gt;) in degrees.
+<span class="lineNum">     512 </span>            :      *
+<span class="lineNum">     513 </span>            :      * The result is in the range (&amp;minus;180&amp;deg; 180&amp;deg;].  N.B.,
+<span class="lineNum">     514 </span>            :      * atan2d(&amp;plusmn;0, &amp;minus;1) = +180&amp;deg;; atan2d(&amp;minus;&amp;epsilon;,
+<span class="lineNum">     515 </span>            :      * &amp;minus;1) = &amp;minus;180&amp;deg;, for &amp;epsilon; positive and tiny;
+<span class="lineNum">     516 </span>            :      * atan2d(&amp;plusmn;0, +1) = &amp;plusmn;0&amp;deg;.
+<span class="lineNum">     517 </span>            :      **********************************************************************/
+<span class="lineNum">     518 </span>            :     template&lt;typename T&gt; static T atan2d(T y, T x);
+<span class="lineNum">     519 </span>            : 
+<span class="lineNum">     520 </span>            :     /**
+<span class="lineNum">     521 </span>            :      * Evaluate the atan function with the result in degrees
+<span class="lineNum">     522 </span>            :      *
+<span class="lineNum">     523 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     524 </span>            :      * @param[in] x
+<span class="lineNum">     525 </span>            :      * @return atan(&lt;i&gt;x&lt;/i&gt;) in degrees.
+<span class="lineNum">     526 </span>            :      **********************************************************************/
+<span class="lineNum">     527 </span>            :    template&lt;typename T&gt; static T atand(T x);
+<span class="lineNum">     528 </span>            : 
+<span class="lineNum">     529 </span>            :     /**
+<span class="lineNum">     530 </span>            :      * Evaluate &lt;i&gt;e&lt;/i&gt; atanh(&lt;i&gt;e x&lt;/i&gt;)
+<span class="lineNum">     531 </span>            :      *
+<span class="lineNum">     532 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     533 </span>            :      * @param[in] x
+<span class="lineNum">     534 </span>            :      * @param[in] es the signed eccentricity =  sign(&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;)
+<span class="lineNum">     535 </span>            :      *    sqrt(|&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;|)
+<span class="lineNum">     536 </span>            :      * @return &lt;i&gt;e&lt;/i&gt; atanh(&lt;i&gt;e x&lt;/i&gt;)
+<span class="lineNum">     537 </span>            :      *
+<span class="lineNum">     538 </span>            :      * If &lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt; is negative (&lt;i&gt;e&lt;/i&gt; is imaginary), the
+<span class="lineNum">     539 </span>            :      * expression is evaluated in terms of atan.
+<span class="lineNum">     540 </span>            :      **********************************************************************/
+<span class="lineNum">     541 </span>            :     template&lt;typename T&gt; static T eatanhe(T x, T es);
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span>            :     /**
+<span class="lineNum">     544 </span>            :      * tan&amp;chi; in terms of tan&amp;phi;
+<span class="lineNum">     545 </span>            :      *
+<span class="lineNum">     546 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     547 </span>            :      * @param[in] tau &amp;tau; = tan&amp;phi;
+<span class="lineNum">     548 </span>            :      * @param[in] es the signed eccentricity = sign(&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;)
+<span class="lineNum">     549 </span>            :      *   sqrt(|&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;|)
+<span class="lineNum">     550 </span>            :      * @return &amp;tau;&amp;prime; = tan&amp;chi;
+<span class="lineNum">     551 </span>            :      *
+<span class="lineNum">     552 </span>            :      * See Eqs. (7--9) of
+<span class="lineNum">     553 </span>            :      * C. F. F. Karney,
+<span class="lineNum">     554 </span>            :      * &lt;a href=&quot;https://doi.org/10.1007/s00190-011-0445-3&quot;&gt;
+<span class="lineNum">     555 </span>            :      * Transverse Mercator with an accuracy of a few nanometers,&lt;/a&gt;
+<span class="lineNum">     556 </span>            :      * J. Geodesy 85(8), 475--485 (Aug. 2011)
+<span class="lineNum">     557 </span>            :      * (preprint
+<span class="lineNum">     558 </span>            :      * &lt;a href=&quot;https://arxiv.org/abs/1002.1417&quot;&gt;arXiv:1002.1417&lt;/a&gt;).
+<span class="lineNum">     559 </span>            :      **********************************************************************/
+<span class="lineNum">     560 </span>            :     template&lt;typename T&gt; static T taupf(T tau, T es);
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span>            :     /**
+<span class="lineNum">     563 </span>            :      * tan&amp;phi; in terms of tan&amp;chi;
+<span class="lineNum">     564 </span>            :      *
+<span class="lineNum">     565 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     566 </span>            :      * @param[in] taup &amp;tau;&amp;prime; = tan&amp;chi;
+<span class="lineNum">     567 </span>            :      * @param[in] es the signed eccentricity = sign(&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;)
+<span class="lineNum">     568 </span>            :      *   sqrt(|&lt;i&gt;e&lt;/i&gt;&lt;sup&gt;2&lt;/sup&gt;|)
+<span class="lineNum">     569 </span>            :      * @return &amp;tau; = tan&amp;phi;
+<span class="lineNum">     570 </span>            :      *
+<span class="lineNum">     571 </span>            :      * See Eqs. (19--21) of
+<span class="lineNum">     572 </span>            :      * C. F. F. Karney,
+<span class="lineNum">     573 </span>            :      * &lt;a href=&quot;https://doi.org/10.1007/s00190-011-0445-3&quot;&gt;
+<span class="lineNum">     574 </span>            :      * Transverse Mercator with an accuracy of a few nanometers,&lt;/a&gt;
+<span class="lineNum">     575 </span>            :      * J. Geodesy 85(8), 475--485 (Aug. 2011)
+<span class="lineNum">     576 </span>            :      * (preprint
+<span class="lineNum">     577 </span>            :      * &lt;a href=&quot;https://arxiv.org/abs/1002.1417&quot;&gt;arXiv:1002.1417&lt;/a&gt;).
+<span class="lineNum">     578 </span>            :      **********************************************************************/
+<span class="lineNum">     579 </span>            :     template&lt;typename T&gt; static T tauf(T taup, T es);
+<span class="lineNum">     580 </span>            : 
+<span class="lineNum">     581 </span>            :     /**
+<span class="lineNum">     582 </span>            :      * Test for finiteness.
+<span class="lineNum">     583 </span>            :      *
+<span class="lineNum">     584 </span>            :      * @tparam T the type of the argument.
+<span class="lineNum">     585 </span>            :      * @param[in] x
+<span class="lineNum">     586 </span>            :      * @return true if number is finite, false if NaN or infinite.
+<span class="lineNum">     587 </span>            :      **********************************************************************/
+<span class="lineNum">     588 </span>            :     template&lt;typename T&gt; static bool isfinite(T x);
+<span class="lineNum">     589 </span>            : 
+<span class="lineNum">     590 </span>            :     /**
+<span class="lineNum">     591 </span>            :      * The NaN (not a number)
+<span class="lineNum">     592 </span>            :      *
+<span class="lineNum">     593 </span>            :      * @tparam T the type of the returned value.
+<span class="lineNum">     594 </span>            :      * @return NaN if available, otherwise return the max real of type T.
+<span class="lineNum">     595 </span>            :      **********************************************************************/
+<span class="lineNum">     596 </span>            :     template&lt;typename T&gt; static T NaN();
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span>            :     /**
+<a name="599"><span class="lineNum">     599 </span>            :      * A synonym for NaN&lt;real&gt;().</a>
+<span class="lineNum">     600 </span>            :      **********************************************************************/
+<span class="lineNum">     601 </span><span class="lineNoCov">          0 :     static real NaN() { return NaN&lt;real&gt;(); }</span>
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            :     /**
+<span class="lineNum">     604 </span>            :      * Test for NaN.
+<span class="lineNum">     605 </span>            :      *
+<span class="lineNum">     606 </span>            :      * @tparam T the type of the argument.
+<span class="lineNum">     607 </span>            :      * @param[in] x
+<span class="lineNum">     608 </span>            :      * @return true if argument is a NaN.
+<span class="lineNum">     609 </span>            :      **********************************************************************/
+<span class="lineNum">     610 </span>            :     template&lt;typename T&gt; static bool isnan(T x);
+<span class="lineNum">     611 </span>            : 
+<span class="lineNum">     612 </span>            :     /**
+<span class="lineNum">     613 </span>            :      * Infinity
+<span class="lineNum">     614 </span>            :      *
+<span class="lineNum">     615 </span>            :      * @tparam T the type of the returned value.
+<span class="lineNum">     616 </span>            :      * @return infinity if available, otherwise return the max real.
+<span class="lineNum">     617 </span>            :      **********************************************************************/
+<span class="lineNum">     618 </span>            :     template&lt;typename T&gt; static T infinity();
+<span class="lineNum">     619 </span>            : 
+<span class="lineNum">     620 </span>            :     /**
+<span class="lineNum">     621 </span>            :      * A synonym for infinity&lt;real&gt;().
+<span class="lineNum">     622 </span>            :      **********************************************************************/
+<span class="lineNum">     623 </span>            :     static real infinity() { return infinity&lt;real&gt;(); }
+<span class="lineNum">     624 </span>            : 
+<span class="lineNum">     625 </span>            :     /**
+<span class="lineNum">     626 </span>            :      * Swap the bytes of a quantity
+<span class="lineNum">     627 </span>            :      *
+<span class="lineNum">     628 </span>            :      * @tparam T the type of the argument and the returned value.
+<span class="lineNum">     629 </span>            :      * @param[in] x
+<span class="lineNum">     630 </span>            :      * @return x with its bytes swapped.
+<span class="lineNum">     631 </span>            :      **********************************************************************/
+<span class="lineNum">     632 </span>            :     template&lt;typename T&gt; static T swab(T x) {
+<span class="lineNum">     633 </span>            :       union {
+<span class="lineNum">     634 </span>            :         T r;
+<span class="lineNum">     635 </span>            :         unsigned char c[sizeof(T)];
+<span class="lineNum">     636 </span>            :       } b;
+<span class="lineNum">     637 </span>            :       b.r = x;
+<span class="lineNum">     638 </span>            :       for (int i = sizeof(T)/2; i--; )
+<span class="lineNum">     639 </span>            :         std::swap(b.c[i], b.c[sizeof(T) - 1 - i]);
+<span class="lineNum">     640 </span>            :       return b.r;
+<span class="lineNum">     641 </span>            :     }
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span>            :   };
+<span class="lineNum">     644 </span>            : 
+<span class="lineNum">     645 </span>            : } // namespace GeographicLib
+<span class="lineNum">     646 </span>            : 
+<span class="lineNum">     647 </span>            : #endif  // GEOGRAPHICLIB_MATH_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
